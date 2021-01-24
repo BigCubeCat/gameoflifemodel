@@ -26,9 +26,12 @@ func saveToFile(model Life, data string, countGeneration int, fileName string) e
 		strconv.Itoa(model.SIZE) + ";\n" + data +
 		"Generation: " + strconv.Itoa(countGeneration) + ";\n"
 	f, err := os.Create(fileName)
+	if err != nil {
+		return err
+	}
 	defer f.Close()
-	f.WriteString(newData)
-	return err
+	_, e := f.WriteString(newData)
+	return e
 }
 
 func main() {
@@ -82,7 +85,6 @@ func main() {
 	}
 	var d []bool
 	if len(inputFile) != 0 {
-		// TODO
 		content, err := ioutil.ReadFile(inputFile)
 		if err != nil {
 			panic(err)
