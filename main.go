@@ -81,6 +81,7 @@ func main() {
 	}
 	var d []bool
 	if len(inputFile) != 0 {
+		// TODO
 		content, err := ioutil.ReadFile(inputFile)
 		if err != nil {
 			panic(err)

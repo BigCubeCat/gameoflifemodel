@@ -5,13 +5,14 @@ import (
 )
 
 type Life struct {
-	Data     []bool
-	newData  []bool
-	dataSize int
-	SIZE     int
-	N        int
-	B        map[int]bool
-	S        map[int]bool
+	Data            []bool
+	newData         []bool
+	dataSize        int
+	SIZE            int
+	N               int
+	B               map[int]bool
+	S               map[int]bool
+	neighborsCoords []int
 }
 
 func randBool() bool {
@@ -46,6 +47,18 @@ func (life *Life) Setup(b []int, s []int, data []bool) {
 		life.Data = data
 		life.newData = data
 	}
+	life.neighborsCoords = []int{0}
+	for i := 0; i < life.N; i++ {
+		step := intPow(life.SIZE, i)
+		var newCoords []int
+		for _, a := range life.neighborsCoords {
+			left := a - step
+			right := a + step
+			newCoords = append(newCoords, left)
+			newCoords = append(newCoords, right)
+		}
+		life.neighborsCoords = append(life.neighborsCoords, newCoords...)
+	}
 }
 
 func (life *Life) inWorld(index int) bool {
@@ -68,28 +81,15 @@ func (life *Life) applyRules(index int) bool {
 }
 
 func (life *Life) countNeighbours(index int) int {
-	coords := []int{index}
 	countN := 0
-	for i := 0; i < life.N; i++ {
-		step := intPow(life.SIZE, i)
-		newCoords := []int{index}
-		for _, a := range coords {
-			left := a - step
-			right := a + step
-			if life.inWorld(left) {
-				if life.getCell(left) {
-					countN++
-				}
-				newCoords = append(newCoords, left)
-			}
-			if life.inWorld(right) {
-				if life.getCell(right) {
-					countN++
-				}
-				newCoords = append(newCoords, right)
-			}
+	for _, indx := range life.neighborsCoords {
+		if indx == 0 {
+			continue
 		}
-		coords = append(coords, newCoords...)
+		coord := index + indx
+		if life.getCell(coord) {
+			countN++
+		}
 	}
 	return countN
 }
