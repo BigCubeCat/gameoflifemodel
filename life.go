@@ -25,7 +25,7 @@ func intPow(a int, b int) int {
 	}
 	return answer
 }
-func (life *Life) Setup(b []int, s []int, data []int) {
+func (life *Life) Setup(b []int, s []int, data []bool) {
 	life.B = make(map[int]bool)
 	life.S = make(map[int]bool)
 	for _, i := range b {
@@ -43,10 +43,8 @@ func (life *Life) Setup(b []int, s []int, data []int) {
 			life.newData[i] = false
 		}
 	} else {
-		for i := 0; i < life.dataSize; i++ {
-			life.Data[i] = false
-			life.newData[i] = false
-		}
+		life.Data = data
+		life.newData = data
 	}
 }
 
@@ -64,9 +62,9 @@ func (life *Life) getCell(index int) bool {
 func (life *Life) applyRules(index int) bool {
 	cell := life.getCell(index)
 	if cell {
-		return life.B[life.countNeighbours(index)]
+		return life.S[life.countNeighbours(index)]
 	}
-	return life.S[life.countNeighbours(index)]
+	return life.B[life.countNeighbours(index)]
 }
 
 func (life *Life) countNeighbours(index int) int {
@@ -101,4 +99,8 @@ func (life *Life) NextGeneration() {
 		life.newData[i] = life.applyRules(i)
 	}
 	life.Data, life.newData = life.newData, life.Data
+}
+
+func (life *Life) GetData() []bool {
+	return life.Data
 }
