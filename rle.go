@@ -39,3 +39,14 @@ func RLECode(str string) string {
 	return answer
 }
 
+func dataToString(data []bool) string {
+	answer := ""
+	for _, e := range data {
+		if e {
+			answer += "A"
+		} else {
+			answer += "D"
+		}
+	}
+	return answer
+}

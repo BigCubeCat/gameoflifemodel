@@ -9,18 +9,6 @@ import (
 	"strings"
 )
 
-func dataToString(data []bool) string {
-	answer := ""
-	for _, e := range data {
-		if e {
-			answer += "A"
-		} else {
-			answer += "D"
-		}
-	}
-	return answer
-}
-
 func saveToFile(model Life, data string, countGeneration int, fileName string) error {
 	newData := "D: " + strconv.Itoa(model.N) + ";\nSize: " +
 		strconv.Itoa(model.SIZE) + ";\n" + data +
@@ -49,7 +37,7 @@ func main() {
 		s               []int
 	)
 	pflag.StringVarP(&outputFile, "out", "o", "data.life", "output file")
-	pflag.StringVarP(&inputFile, "in", "i", "", "output file")
+	pflag.StringVarP(&inputFile, "in", "i", "input.life", "input file")
 	pflag.IntVarP(&dimension, "dimension", "d", 3, "dimension of world")
 	pflag.IntVarP(&size, "size", "S", 10, "side size")
 	pflag.StringVarP(&B, "b-rule", "b", "5", "Rules for birth")
@@ -84,26 +72,22 @@ func main() {
 		N:    dimension,
 	}
 	var d []bool
-	if len(inputFile) != 0 {
-		content, err := ioutil.ReadFile(inputFile)
-		if err != nil {
-			panic(err)
+	content, err := ioutil.ReadFile(inputFile)
+	if err != nil {
+		panic(err)
+	}
+	contentStrings := strings.Split(string(content), ";")
+	str := RLEDecode(contentStrings[2])
+	newN, _ := strconv.Atoi(strings.Split(contentStrings[0], ": ")[1])
+	newSize, _ := strconv.Atoi(strings.Split(contentStrings[1], ": ")[1])
+	model.N = newN
+	model.SIZE = newSize
+	for _, c := range str {
+		if string(c) == "A" {
+			d = append(d, true)
+		} else {
+			d = append(d, false)
 		}
-		contentStrings := strings.Split(string(content), ";")
-		str := RLEDecode(contentStrings[2])
-		newN, _ := strconv.Atoi(strings.Split(contentStrings[0], ": ")[1])
-		newSize, _ := strconv.Atoi(strings.Split(contentStrings[1], ": ")[1])
-
-		model.N = newN
-		model.SIZE = newSize
-		for _, c := range str {
-			if string(c) == "A" {
-				d = append(d, true)
-			} else {
-				d = append(d, false)
-			}
-		}
-
 	}
 	lastGens := ""       // last generations
 	model.Setup(b, s, d) // Set rules and data, if data exists
@@ -114,6 +98,7 @@ func main() {
 			lastGens += RLECode(dataToString(model.GetData())) + ";\n"
 		}
 	}
+	fmt.Println(model.Data)
 	fmt.Println("Starting write to file")
 	saveErr := saveToFile(model, lastGens, countGeneration, outputFile)
 	if saveErr != nil {
