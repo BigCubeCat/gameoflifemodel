@@ -1,4 +1,4 @@
 run:
 	go build && python finder.py
-make:
+build:
 	go build && chmod +x finder.py
