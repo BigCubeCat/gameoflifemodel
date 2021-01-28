@@ -80,7 +80,7 @@ func main() {
 	if inputFile == "" {
 		d = make([]bool, intPow(size, dimension))
 		for i := range d {
-			d[i] = random()
+			d[i] = random() && random()
 		}
 	} else {
 		content, err := ioutil.ReadFile(inputFile)
