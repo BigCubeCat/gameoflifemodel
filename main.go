@@ -103,7 +103,7 @@ func main() {
 	}
 	lastGens := ""       // last generations
 	model.Setup(b, s, d) // Set rules and data, if data exists
-	fmt.Println(model.dataSize)
+	fmt.Println(model.Data)
 	fmt.Println("Model is created")
 	for i := countGeneration; i > 0; i-- {
 		model.NextGeneration()
