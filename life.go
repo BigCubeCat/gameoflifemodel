@@ -55,7 +55,6 @@ func (life *Life) applyRules(index int) bool {
 
 func (life *Life) countNeighbours(index int) int {
 	countN := 0
-	n := 0
 	coords := []int{0}
 	for _, s := range life.steps {
 		var newCoords []int
@@ -63,14 +62,12 @@ func (life *Life) countNeighbours(index int) int {
 			left := a - s
 			right := a + s
 			if life.inWorld(index + left) {
-				n++
 				newCoords = append(newCoords, left)
 				if life.getCell(index + left) {
 					countN += 1
 				}
 			}
 			if life.inWorld(index + right) {
-				n++
 				newCoords = append(newCoords, right)
 				if life.getCell(index + right) {
 					countN += 1

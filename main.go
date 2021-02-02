@@ -1,31 +1,30 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/spf13/pflag"
 	"io/ioutil"
-	"os"
+	"math/rand"
 	"strconv"
 	"strings"
 )
 
-func saveToFile(model Life, data string, countGeneration int, fileName string) error {
-	newData := "D: " + strconv.Itoa(model.N) + ";\nSize: " +
-		strconv.Itoa(model.SIZE) + ";\n" + data +
-		"Generation: " + strconv.Itoa(countGeneration) + ";\n"
-	f, err := os.Create(fileName)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-	_, e := f.WriteString(newData)
-	return e
+type dataModel struct {
+	D    int
+	SIZE int
+	DATA string
+	B    string
+	S    string
+}
+
+func random() bool {
+	return rand.Uint64()&(1<<63) == 0
 }
 
 func main() {
 	var (
 		showHelp        bool
-		last            int
 		outputFile      string
 		inputFile       string
 		dimension       int
@@ -37,19 +36,40 @@ func main() {
 		s               []int
 	)
 	pflag.StringVarP(&outputFile, "out", "o", "data.life", "output file")
-	pflag.StringVarP(&inputFile, "in", "i", "input.life", "input file")
+	pflag.StringVarP(&inputFile, "in", "i", "", "input file")
 	pflag.IntVarP(&dimension, "dimension", "d", 3, "dimension of world")
 	pflag.IntVarP(&size, "size", "S", 10, "side size")
 	pflag.StringVarP(&B, "b-rule", "b", "5", "Rules for birth")
 	pflag.StringVarP(&S, "s-rule", "s", "4,5", "Rules for save")
 	pflag.IntVarP(&countGeneration, "count", "g", 100, "count generations.")
-	pflag.IntVarP(&last, "last", "l", 1, "write to file last {value} generations")
 	pflag.BoolVarP(&showHelp, "help", "h", false,
 		"Show help message")
 	pflag.Parse()
 	if showHelp {
 		pflag.Usage()
 		return
+	}
+	model := Life{
+		SIZE: size,
+		N:    dimension,
+	}
+	var d []bool
+	if inputFile == "" {
+		d = make([]bool, intPow(size, dimension))
+		for i := range d {
+			d[i] = random() && random()
+		}
+	} else {
+		byteData, err := ioutil.ReadFile(inputFile)
+		if err != nil {
+			panic(err)
+		}
+		var md dataModel
+		json.Unmarshal(byteData, &md)
+		B = md.B
+		S = md.S
+		model.N = md.D
+		model.SIZE = md.SIZE
 	}
 	stringB := strings.Split(B, ",")
 	for _, e := range stringB {
@@ -67,40 +87,24 @@ func main() {
 		}
 		s = append(s, elem)
 	}
-	model := Life{
-		SIZE: size,
-		N:    dimension,
-	}
-	var d []bool
-	content, err := ioutil.ReadFile(inputFile)
-	if err != nil {
-		panic(err)
-	}
-	contentStrings := strings.Split(string(content), ";")
-	str := RLEDecode(contentStrings[2])
-	newN, _ := strconv.Atoi(strings.Split(contentStrings[0], ": ")[1])
-	newSize, _ := strconv.Atoi(strings.Split(contentStrings[1], ": ")[1])
-	model.N = newN
-	model.SIZE = newSize
-	for _, c := range str {
-		if string(c) == "A" {
-			d = append(d, true)
-		} else {
-			d = append(d, false)
-		}
-	}
-	lastGens := ""       // last generations
+
 	model.Setup(b, s, d) // Set rules and data, if data exists
+	fmt.Println(model.Data)
 	fmt.Println("Model is created")
 	for i := countGeneration; i > 0; i-- {
 		model.NextGeneration()
-		if i <= last {
-			lastGens += RLECode(dataToString(model.GetData())) + ";\n"
-		}
 	}
-	fmt.Println(model.Data)
+	out := RLECode(dataToString(model.GetData()))
 	fmt.Println("Starting write to file")
-	saveErr := saveToFile(model, lastGens, countGeneration, outputFile)
+	output := dataModel{
+		D:    model.N,
+		SIZE: model.SIZE,
+		DATA: out,
+		B:    B,
+		S:    S,
+	}
+	file, _ := json.MarshalIndent(output, "", "")
+	saveErr := ioutil.WriteFile(outputFile, file, 0644)
 	if saveErr != nil {
 		panic(saveErr)
 	} else {
