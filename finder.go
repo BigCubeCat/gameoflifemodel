@@ -66,7 +66,7 @@ func findRules(size int) {
 					S:    strings.Join(s_string, ","),
 				}
 				file, _ := json.MarshalIndent(output, "", "")
-				outputFile := "data" + strconv.Itoa(D) + "B" + strconv.Itoa(b_variant) + ".json"
+				outputFile := "data" + strconv.Itoa(D) + "B" + strconv.Itoa(b_variant) + "try" + strconv.Itoa(t) + ".json"
 				saveErr := ioutil.WriteFile(outputFile, file, 0644)
 				if saveErr != nil {
 					panic(saveErr)
