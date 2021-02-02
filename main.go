@@ -40,7 +40,7 @@ func main() {
 	pflag.StringVarP(&outputFile, "out", "o", "data.life", "output file")
 	pflag.StringVarP(&inputFile, "in", "i", "", "input file")
 	pflag.IntVarP(&dimension, "dimension", "d", 3, "dimension of world")
-	pflag.IntVarP(&size, "size", "S", 256, "side size")
+	pflag.IntVarP(&size, "size", "S", 128, "side size")
 	pflag.StringVarP(&B, "b-rule", "b", "5", "Rules for birth")
 	pflag.StringVarP(&S, "s-rule", "s", "4,5", "Rules for save")
 	pflag.IntVarP(&countGeneration, "count", "g", 100, "count generations.")

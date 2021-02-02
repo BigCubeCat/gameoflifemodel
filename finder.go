@@ -44,11 +44,14 @@ func findRules(size int) {
 				var d []bool
 
 				d = make([]bool, intPow(size, D))
+				fmt.Print(len(d))
 				for x := range d {
 					d[x] = random() && random()
 				}
-				life.Setup(b, s, []bool{})
+				life.Setup(b, s, d)
+				fmt.Println(life.dataSize)
 
+				fmt.Println("Starting Evolution")
 				for g := 0; g < 10; g++ {
 					life.NextGeneration()
 				}
