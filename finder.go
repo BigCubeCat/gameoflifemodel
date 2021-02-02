@@ -12,17 +12,13 @@ func countNeighbours(d int) int {
 
 func generateS(b int, d int) []int {
 	var answer []int
-	if d%2 != 0 {
-		d--
-		half := d / 2
-		for i := b - half; i <= half+b; i++ {
-			answer = append(answer, i)
-		}
-	} else {
-		half := d / 2
-		for i := b - half; i <= half+b; i++ {
-			answer = append(answer, i)
-		}
+	half := d / 2
+	o := 0
+	if d%2 == 0 {
+		o = 1
+	}
+	for i := b - half; i <= b+half-o; i++ {
+		answer = append(answer, i)
 	}
 	return answer
 }
