@@ -52,7 +52,7 @@ func main() {
 		return
 	}
 	if finderMod {
-		findRules(size)
+		findRules(size, dimension, countGeneration)
 		return
 	}
 	model := Life{
