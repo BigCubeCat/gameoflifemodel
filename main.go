@@ -76,6 +76,8 @@ func main() {
 	pflag.Parse()
 	if showHelp {
 		pflag.Usage()
+		fmt.Println("Use \",\" to split different numbers on rule.")
+		fmt.Println("Use \"{start}.{end}\" to set range [start, end] (end and start includes)")
 		return
 	}
 	if finderMod {
