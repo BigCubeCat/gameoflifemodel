@@ -22,6 +22,33 @@ func random() bool {
 	return rand.Uint64()&(1<<63) == 0
 }
 
+func readRule(rule string) []int {
+	var answer []int
+	r := strings.Split(rule, ",")
+	for _, e := range r {
+		elem, err := strconv.Atoi(e)
+		if err != nil {
+			if strings.Contains(e, ".") {
+				ran := strings.Split(e, ".")
+				var subrange []int
+				start, err1 := strconv.Atoi(ran[0])
+				fin, err2 := strconv.Atoi(ran[1])
+				if err1 == nil && err2 == nil {
+					for i := start; i <= fin; i++ {
+						subrange = append(subrange, i)
+					}
+				}
+				answer = append(answer, subrange...)
+			} else {
+				break
+			}
+		} else {
+			answer = append(answer, elem)
+		}
+	}
+	return answer
+}
+
 func main() {
 	var (
 		showHelp        bool
@@ -85,24 +112,10 @@ func main() {
 			}
 		}
 	}
-	stringB := strings.Split(B, ",")
-	for _, e := range stringB {
-		elem, err := strconv.Atoi(e)
-		if err != nil {
-			break
-		}
-		b = append(b, elem)
-	}
-	stringS := strings.Split(S, ",")
-	for _, e := range stringS {
-		elem, err := strconv.Atoi(e)
-		if err != nil {
-			break
-		}
-		s = append(s, elem)
-	}
-
-	fmt.Println(B)
+	fmt.Println(B, S)
+	b = readRule(B)
+	s = readRule(S)
+	fmt.Println(b, s)
 
 	model.Setup(b, s, d) // Set rules and data, if data exists
 	fmt.Println("Model is created")
