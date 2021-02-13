@@ -76,6 +76,14 @@ func main() {
 		S = md.S
 		model.N = md.D
 		model.SIZE = md.SIZE
+		str_data := RLEDecode(md.DATA)
+		for _, c := range str_data {
+			if string(c) == "A" {
+				d = append(d, true)
+			} else {
+				d = append(d, false)
+			}
+		}
 	}
 	stringB := strings.Split(B, ",")
 	for _, e := range stringB {
@@ -94,8 +102,9 @@ func main() {
 		s = append(s, elem)
 	}
 
+	fmt.Println(B)
+
 	model.Setup(b, s, d) // Set rules and data, if data exists
-	fmt.Println(model.Data)
 	fmt.Println("Model is created")
 	for i := countGeneration; i > 0; i-- {
 		model.NextGeneration()
