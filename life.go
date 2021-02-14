@@ -66,11 +66,11 @@ func (life *Life) countNeighbours(index int) int {
 					countN += 1
 				}
 			}
-			if (index+a+s)%life.SIZE == 0 {
+			right := a + s
+			if (index+right)%life.SIZE == 0 {
 				// "right" boreder
 				continue
 			}
-			right := a + s
 			if life.inWorld(index + right) {
 				newCoords = append(newCoords, right)
 				if life.getCell(index + right) {
