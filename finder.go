@@ -48,7 +48,7 @@ func findRules(size int, D int, G int) {
 				S:    strings.Join(s_string, ","),
 			}
 			file, _ := json.MarshalIndent(output, "", "")
-			outputFile := "data" + strconv.Itoa(D) + "try" + strconv.Itoa(t) + ".life"
+			outputFile := "Gen" + strconv.Itoa(g) + "data" + strconv.Itoa(D) + "try" + strconv.Itoa(t) + ".life"
 			fmt.Println("Starting write to file")
 			saveErr := ioutil.WriteFile(outputFile, file, 0644)
 			if saveErr != nil {
