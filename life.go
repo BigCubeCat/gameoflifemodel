@@ -66,8 +66,7 @@ func (life *Life) countNeighbours(index int) int {
 					countN += 1
 				}
 			}
-			if (index+s)%life.SIZE == 0 { // error
-				// "right" border
+			if (index+s)%life.SIZE == 0 { // if it's corner on current dimension, don't calculate right boreder
 				continue
 			}
 			right := a + s
