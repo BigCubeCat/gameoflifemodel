@@ -132,7 +132,7 @@ func main() {
 	fmt.Println(model.GetData())
 	fmt.Println("Model is created")
 	if finderMod {
-		for t := 0; t < 1; t++ {
+		for t := 0; t < 100; t++ {
 			findRules(model, countGeneration, details, t)
 		}
 		return
