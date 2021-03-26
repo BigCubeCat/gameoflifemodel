@@ -17,6 +17,23 @@ func intPow(a int, b int) int {
 	}
 	return answer
 }
+
+func (life *Life) getN() int {
+	return life.N
+}
+
+func (life *Life) getSIZE() int {
+	return life.SIZE
+}
+
+func (life *Life) setN(n int) {
+	life.N = n
+}
+
+func (life *Life) setSIZE(n int) {
+	life.SIZE = n
+}
+
 func (life *Life) Setup(b []int, s []int, data []bool) {
 	life.B = make(map[int]bool)
 	life.S = make(map[int]bool)
@@ -78,6 +95,7 @@ func (life *Life) countNeighbours(index int) int {
 			}
 		}
 		coords = append(coords, newCoords...)
+		newCoords = nil
 	}
 	return countN
 }
@@ -92,4 +110,12 @@ func (life *Life) NextGeneration() {
 
 func (life *Life) GetData() []bool {
 	return life.Data
+}
+
+func (life *Life) GetB() []string {
+	return ListKeys(life.B)
+}
+
+func (life *Life) GetS() []string {
+	return ListKeys(life.S)
 }

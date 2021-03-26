@@ -62,6 +62,8 @@ func main() {
 		countGeneration int
 		b               []int
 		s               []int
+		model3d         bool
+		details         bool
 	)
 	pflag.BoolVarP(&finderMod, "find", "f", false, "find mod")
 	pflag.StringVarP(&outputFile, "out", "o", "data.life", "output file")
@@ -71,8 +73,9 @@ func main() {
 	pflag.StringVarP(&B, "b-rule", "b", "5", "Rules for birth")
 	pflag.StringVarP(&S, "s-rule", "s", "4,5", "Rules for save")
 	pflag.IntVarP(&countGeneration, "count", "g", 100, "count generations.")
-	pflag.BoolVarP(&showHelp, "help", "h", false,
-		"Show help message")
+	pflag.BoolVarP(&showHelp, "help", "h", false, "Show help message")
+	pflag.BoolVarP(&model3d, "model3d", "3", false, "Use 3D model")
+	pflag.BoolVarP(&details, "details", "e", false, "save all generations")
 	pflag.Parse()
 	if showHelp {
 		pflag.Usage()
@@ -80,13 +83,20 @@ func main() {
 		fmt.Println("Use \"{start}.{end}\" to set range [start, end] (end and start includes)")
 		return
 	}
-	if finderMod {
-		findRules(size, dimension, countGeneration)
-		return
-	}
-	model := Life{
-		SIZE: size,
-		N:    dimension,
+
+	var model MODEL
+
+	if model3d {
+		model = &Life3d{
+			SIZE: size,
+			N:    3,
+		}
+		dimension = 3
+	} else {
+		model = &Life{
+			SIZE: size,
+			N:    dimension,
+		}
 	}
 	var d []bool
 	if inputFile == "" {
@@ -103,8 +113,8 @@ func main() {
 		json.Unmarshal(byteData, &md)
 		B = md.B
 		S = md.S
-		model.N = md.D
-		model.SIZE = md.SIZE
+		model.setN(md.D)
+		model.setSIZE(md.SIZE)
 		str_data := RLEDecode(md.DATA)
 		for _, c := range str_data {
 			if string(c) == "A" {
@@ -114,21 +124,27 @@ func main() {
 			}
 		}
 	}
-	fmt.Println(B, S)
 	b = readRule(B)
 	s = readRule(S)
-	fmt.Println(b, s)
 
 	model.Setup(b, s, d) // Set rules and data, if data exists
+	fmt.Println("HERE")
+	fmt.Println(model.GetData())
 	fmt.Println("Model is created")
+	if finderMod {
+		for t := 0; t < 1; t++ {
+			findRules(model, countGeneration, details, t)
+		}
+		return
+	}
 	for i := countGeneration; i > 0; i-- {
 		model.NextGeneration()
 	}
 	out := RLECode(dataToString(model.GetData()))
 	fmt.Println("Starting write to file")
 	output := dataModel{
-		D:    model.N,
-		SIZE: model.SIZE,
+		D:    model.getN(),
+		SIZE: model.getSIZE(),
 		DATA: out,
 		B:    B,
 		S:    S,
