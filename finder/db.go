@@ -13,7 +13,6 @@ type Attempt struct {
 	S         string
 	Size      uint
 	Dimension uint
-	Density   uint
 	Count     uint
 	Tests     []Test `gorm:"foreignKey:AttemptID"`
 }
@@ -27,9 +26,11 @@ type Test struct {
 
 type Generation struct {
 	gorm.Model
-	TestID     uint
-	Generation uint `gorm:"default:0"`
-	Data       string
+	TestID        uint
+	Generation    uint `gorm:"default:0"`
+	StartDensity  uint
+	FinishDensity uint
+	Data          string
 }
 
 func InitDatabase(databaseName string) {
