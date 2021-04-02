@@ -6,17 +6,9 @@ import (
 	lifeModel "gameoflifemodel/model"
 	"github.com/TwinProduction/go-color"
 	"github.com/spf13/pflag"
-	"math/rand"
 	"strconv"
 	"strings"
 )
-
-func random(probability int) bool {
-	min := 0
-	max := 100
-	value := rand.Intn(max-min) + min
-	return value <= probability
-}
 
 func readRule(rule string) []int {
 	var answer []int
@@ -96,16 +88,12 @@ func RunProgram(m lifeModel.MODEL) {
 	} else {
 		model = m
 	}
-	d := make([]bool, lifeModel.IntPow(size, dimension))
-	for i := range d {
-		d[i] = random(probability)
-	}
+	dataSize := lifeModel.IntPow(size, dimension)
 	b = readRule(B)
 	s = readRule(S)
 
-	model.Setup(b, s, d) // Set rules and data, if data exists
 	fmt.Println(color.Ize(color.Green, "Start game of life"))
-	finder.FindRules(model, countGeneration, attempts, fileName)
+	finder.FindRules(model, countGeneration, attempts, fileName, probability, b, s, dataSize)
 	fmt.Println(color.Ize(color.Green, "Finish. No Errors"))
 }
 
