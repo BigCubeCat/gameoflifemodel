@@ -56,6 +56,7 @@ func FindRules(mod model.MODEL, G int, T int, fileName string, probability int, 
 		return
 	}
 	for t := 0; t < T; t++ {
+		fmt.Println(color.Ize(color.Green, "Starting Evolution"))
 		test := Test{
 			AttemptID: a.ID,
 			Count:     uint(G),
