@@ -22,6 +22,7 @@ func FindRules(mod model.MODEL, G int, T int, fileName string) {
 		return
 	}
 	for t := 0; t < T; t++ {
+		fmt.Println(color.Ize(color.Green, "Starting Evolution"))
 		test := Test{
 			AttemptID: a.ID,
 			Count:     uint(G),
@@ -32,7 +33,6 @@ func FindRules(mod model.MODEL, G int, T int, fileName string) {
 			return
 		}
 		for g := uint(0); g < uint(G); g++ {
-			fmt.Println(color.Ize(color.Green, "Starting Evolution"))
 			fmt.Println(color.Ize(color.Cyan, "Generation ->"), g)
 			mod.NextGeneration()
 			gen := Generation{
