@@ -2,8 +2,8 @@ package finder
 
 import (
 	"fmt"
-	model "gameoflifemodel/model"
 	"github.com/TwinProduction/go-color"
+	model "github.com/bigcubecat/gameoflifemodel/model"
 	"math/rand"
 	"time"
 )
