@@ -1,4 +1,4 @@
-module gameoflifemodel
+module github.com/bigcubecat/gameoflifemodel
 
 go 1.16
 

@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	finder "gameoflifemodel/finder"
-	lifeModel "gameoflifemodel/model"
 	"github.com/TwinProduction/go-color"
+	finder "github.com/bigcubecat/gameoflifemodel/finder"
+	lifeModel "github.com/bigcubecat/gameoflifemodel/model"
 	"github.com/spf13/pflag"
 	"strconv"
 	"strings"
