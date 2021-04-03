@@ -49,6 +49,7 @@ func RunProgram(m lifeModel.MODEL) {
 		b               []int
 		s               []int
 		model3d         bool
+		model4d         bool
 		probability     int
 		fileName        string
 	)
@@ -59,6 +60,7 @@ func RunProgram(m lifeModel.MODEL) {
 	pflag.IntVarP(&countGeneration, "count", "g", 100, "count generations.")
 	pflag.BoolVarP(&showHelp, "help", "h", false, "Show help message")
 	pflag.BoolVarP(&model3d, "model3d", "3", false, "Use 3D model")
+	pflag.BoolVarP(&model3d, "model4d", "4", false, "Use 4D model")
 	pflag.IntVarP(&attempts, "attempt", "a", 100, "Count attempts")
 	pflag.IntVarP(&probability, "probability", "p", 50, "probability in %")
 	pflag.StringVarP(&fileName, "out", "o", "output.db", "Database name")
@@ -79,6 +81,11 @@ func RunProgram(m lifeModel.MODEL) {
 				N:    3,
 			}
 			dimension = 3
+		} else if model4d {
+			model = &lifeModel.Life4d{
+				SIZE: size,
+				N:    4,
+			}
 		} else {
 			model = &lifeModel.Life{
 				SIZE: size,

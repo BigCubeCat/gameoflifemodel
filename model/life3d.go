@@ -84,23 +84,23 @@ func (life *Life3d) NextGeneration() {
 	for i := 0; i < life.SIZE; i++ {
 		for j := 0; j < life.SIZE; j++ {
 			for k := 0; k < life.SIZE; k++ {
+				count := 0
 				for x := -1; x <= 1; x++ {
-					count := 0
 					for y := -1; y <= 1; y++ {
 						for z := -1; z <= 1; z++ {
 							if x == 0 && y == 0 && z == 0 {
 								continue
 							}
-							if life.Data[life.getIndex(x)][life.getIndex(y)][life.getIndex(z)] {
+							if life.Data[life.getIndex(i+x)][life.getIndex(j+y)][life.getIndex(k+z)] {
 								count += 1
 							}
 						}
 					}
-					if life.Data[i][j][k] {
-						life.newData[i][j][k] = life.S[count]
-					} else {
-						life.newData[i][j][k] = life.B[count]
-					}
+				}
+				if life.Data[i][j][k] {
+					life.newData[i][j][k] = life.S[count]
+				} else {
+					life.newData[i][j][k] = life.B[count]
 				}
 			}
 		}
