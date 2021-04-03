@@ -5,6 +5,7 @@ import (
 	"github.com/TwinProduction/go-color"
 	model "github.com/bigcubecat/gameoflifemodel/model"
 	"math/rand"
+	"strconv"
 	"time"
 )
 
@@ -56,7 +57,7 @@ func FindRules(mod model.MODEL, G int, T int, fileName string, probability int, 
 		return
 	}
 	for t := 0; t < T; t++ {
-		fmt.Println(color.Ize(color.Green, "Starting Evolution"))
+		fmt.Println(color.Ize(color.Green, "Starting test "+strconv.Itoa(t)))
 		test := Test{
 			AttemptID: a.ID,
 			Count:     uint(G),
