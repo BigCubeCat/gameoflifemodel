@@ -81,7 +81,7 @@ func RunProgram(m lifeModel.MODEL) {
 	s = utils.ReadRule(S)
 
 	fmt.Println(color.Ize(color.Green, "Start game of life"))
-	finder.FindRules(model, countGeneration, attempts, fileName, probability, b, s, dataSize)
+	finder.Run(model, countGeneration, attempts, fileName, probability, b, s, dataSize)
 	fmt.Println(color.Ize(color.Green, "Finish. No Errors"))
 }
 

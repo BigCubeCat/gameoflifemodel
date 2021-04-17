@@ -1,8 +1,10 @@
 package utils
 
 import (
+	"math/rand"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // IntPow Pow in int format
@@ -61,4 +63,47 @@ func ReadRule(rule string) []int {
 		}
 	}
 	return answer
+}
+
+// GenerateData generate data
+func GenerateData(probability int, dataSize int) []bool {
+	var a []bool
+	count := dataSize * probability / 100
+	for i := 0; i < count; i++ {
+		a = append(a, true)
+	}
+	for i := 0; i < dataSize-count; i++ {
+		a = append(a, false)
+	}
+	rand.Seed(time.Now().UnixNano())
+	rand.Shuffle(len(a), func(i, j int) { a[i], a[j] = a[j], a[i] })
+	return a
+}
+
+// Random generate random with probability
+func Random(probability int) bool {
+	value := rand.Intn(100)
+	return value <= probability
+}
+
+// IsAlive return true if world alive
+func IsAlive(data string) bool {
+	for _, c := range data {
+		if string(c) == "A" {
+			return true
+		}
+	}
+	return false
+}
+
+// GetDensity get world density
+func GetDensity(data string) uint {
+	var countA float64
+	countA = 0
+	for _, c := range data {
+		if string(c) == "A" {
+			countA += 1.0
+		}
+	}
+	return uint((countA / float64(len(data))) * 100)
 }

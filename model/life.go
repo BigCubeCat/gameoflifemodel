@@ -28,22 +28,14 @@ func (life *Life) Setup(b []int, s []int, data []bool) {
 	for _, i := range s {
 		life.S[i] = true
 	}
+	// create Data and memorize SIZE degres
 	life.dataSize = utils.IntPow(life.SIZE, life.N)
 	life.Data = data
 	for i := 0; i <= life.N; i++ {
 		step := utils.IntPow(life.SIZE, i)
 		life.steps = append(life.steps, step)
 	}
-	life.neighbors = make(map[string][]int, 0)
-	ch := make(chan string)
-	go func() {
-		defer close(ch)
-		utils.Permutation("MLR", "", life.N, ch) // generate all angles
-	}()
-	for i := range ch {
-		life.neighbors[i] = []int{} // TODO
-	}
-
+	// find neighbors for not border point
 	life.coords = append(life.coords, 0)
 	for _, s := range life.steps[0:life.N] {
 		var newCoords []int
@@ -54,47 +46,48 @@ func (life *Life) Setup(b []int, s []int, data []bool) {
 		life.coords = append(life.coords, newCoords...)
 		newCoords = nil
 	}
+	// find all possible angles
+	life.neighbors = make(map[string][]int, 0)
+	ch := make(chan string)
+	go func() {
+		defer close(ch)
+		utils.Permutation("MLR", "", life.N, ch) // generate all angles
+	}()
+	for i := range ch {
+		coords := make([]int, len(life.coords))
+		copy(coords, life.coords)
+		for index, char := range i {
+			diff := 0
+			if string(char) == "L" {
+				diff = 1
+			} else if string(char) == "R" {
+				diff = -1
+			}
+			coords[index] = coords[index] + diff*life.steps[index+1]
+		}
+		life.neighbors[i] = coords
+	}
 }
 
-func (life *Life) checkBoreders(index int) (string, bool) {
+func (life *Life) checkBoreders(index int) string {
 	var answer string
-	border := false
 	for i := 0; i < life.N; i++ {
 		if t := index % life.steps[i+1]; 0 <= t && t < life.steps[i] {
 			// "LEFT" boreder by i degree
 			answer += "L"
-			border = true
 		} else if t := (index + life.steps[i]) % life.steps[i+1]; 0 <= t && t < life.steps[i] {
 			// "RIGHT" border by i degree
 			answer += "R"
-			border = true
 		} else {
 			answer += "M"
 		}
 	}
-	return answer, border // +1
+	return answer
 }
 
 func (life *Life) countNeighbors(index int) int {
 	countN := 0
-	bs, border := life.checkBoreders(index)
-	coords := make([]int, len(life.coords))
-	copy(coords, life.coords[0:len(life.coords)])
-	if border {
-		for i, b := range bs {
-			if b != 0 {
-				for _, elem := range life.coords {
-					if elem == 0 {
-						continue
-					}
-					if life.neighbors[elem][i] != 0 {
-						coords[i] += -int(b) * life.steps[i+1]
-					}
-				}
-			}
-
-		}
-	}
+	coords := life.neighbors[life.checkBoreders(index)]
 	for _, c := range coords {
 		if life.Data[index+c] {
 			countN++
@@ -110,6 +103,7 @@ func (life *Life) applyRules(index int) bool {
 	return life.B[life.countNeighbors(index)]
 }
 
+// NextGeneration run next generation
 func (life *Life) NextGeneration() {
 	newData := make([]bool, life.dataSize)
 	for i := 0; i < life.dataSize; i++ {
