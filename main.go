@@ -2,41 +2,15 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/TwinProduction/go-color"
 	finder "github.com/bigcubecat/gameoflifemodel/finder"
 	lifeModel "github.com/bigcubecat/gameoflifemodel/model"
+	"github.com/bigcubecat/gameoflifemodel/utils"
 	"github.com/spf13/pflag"
-	"strconv"
-	"strings"
 )
 
-func readRule(rule string) []int {
-	var answer []int
-	r := strings.Split(rule, ",")
-	for _, e := range r {
-		elem, err := strconv.Atoi(e)
-		if err != nil {
-			if strings.Contains(e, ".") {
-				ran := strings.Split(e, ".")
-				var subrange []int
-				start, err1 := strconv.Atoi(ran[0])
-				fin, err2 := strconv.Atoi(ran[1])
-				if err1 == nil && err2 == nil {
-					for i := start; i <= fin; i++ {
-						subrange = append(subrange, i)
-					}
-				}
-				answer = append(answer, subrange...)
-			} else {
-				break
-			}
-		} else {
-			answer = append(answer, elem)
-		}
-	}
-	return answer
-}
-
+// RunProgram run finder
 func RunProgram(m lifeModel.MODEL) {
 	var (
 		showHelp        bool
@@ -102,9 +76,9 @@ func RunProgram(m lifeModel.MODEL) {
 	} else {
 		model = m
 	}
-	dataSize := lifeModel.IntPow(size, dimension)
-	b = readRule(B)
-	s = readRule(S)
+	dataSize := utils.IntPow(size, dimension)
+	b = utils.ReadRule(B)
+	s = utils.ReadRule(S)
 
 	fmt.Println(color.Ize(color.Green, "Start game of life"))
 	finder.FindRules(model, countGeneration, attempts, fileName, probability, b, s, dataSize)

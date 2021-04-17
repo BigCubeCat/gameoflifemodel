@@ -2,24 +2,28 @@ package finder
 
 import (
 	"fmt"
-	"github.com/TwinProduction/go-color"
-	model "github.com/bigcubecat/gameoflifemodel/model"
 	"math/rand"
 	"strconv"
 	"time"
+
+	"github.com/TwinProduction/go-color"
+	model "github.com/bigcubecat/gameoflifemodel/model"
+	utils "github.com/bigcubecat/gameoflifemodel/utils"
 )
 
-func getDen(data string) uint {
+func getDen(data string) (uint, bool) {
 	var (
 		countA float64
 	)
 	countA = 0
+	alive := false
 	for _, c := range data {
 		if string(c) == "A" {
 			countA += 1.0
+			alive = true
 		}
 	}
-	return uint((countA / float64(len(data))) * 100)
+	return uint((countA / float64(len(data))) * 100), alive
 }
 
 func random(probability int) bool {
@@ -68,14 +72,16 @@ func FindRules(mod model.MODEL, G int, T int, fileName string, probability int, 
 			return
 		}
 		mod.Setup(b, s, generateData(probability, dataSize))
-		outputData := model.DataToString(mod.GetData())
+		outputData := utils.DataToString(mod.GetData())
+
+		str, _ := getDen(outputData)
 
 		gen := Generation{
 			TestID:        test.ID,
 			Generation:    uint(0),
-			Data:          model.RLECode(outputData),
+			Data:          utils.RLECode(outputData),
 			StartDensity:  uint(probability),
-			FinishDensity: getDen(outputData),
+			FinishDensity: str,
 		}
 		e := DB.Create(&gen)
 
@@ -88,19 +94,23 @@ func FindRules(mod model.MODEL, G int, T int, fileName string, probability int, 
 		for g := uint(1); g <= uint(G); g++ {
 			fmt.Println(color.Ize(color.Cyan, "Generation ->"), g)
 			mod.NextGeneration()
-			outputData := model.DataToString(mod.GetData())
+			outputData := utils.DataToString(mod.GetData())
+			str, alive := getDen(outputData)
 			gen := Generation{
 				TestID:        test.ID,
 				Generation:    g,
-				Data:          model.RLECode(outputData),
+				Data:          utils.RLECode(outputData),
 				StartDensity:  uint(probability),
-				FinishDensity: getDen(outputData),
+				FinishDensity: str,
 			}
 			e := DB.Create(&gen)
 
 			if e.Error != nil {
 				fmt.Println(color.Ize(color.Red, "ERROR. Create generation fail"))
 				return
+			}
+			if !alive {
+				break
 			}
 		}
 		fmt.Println(color.Ize(color.Green, "End evolution"))

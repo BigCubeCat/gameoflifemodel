@@ -1,8 +1,5 @@
 package model
 
-import "strings"
-import "strconv"
-
 type MODEL interface {
 	NextGeneration()
 	Setup(a []int, b []int, c []bool)
@@ -21,12 +18,4 @@ type dataModel struct {
 	DATA string
 	B    string
 	S    string
-}
-
-func ListKeys(m map[int]bool) string {
-	var answer []string
-	for k := range m {
-		answer = append(answer, strconv.Itoa(k))
-	}
-	return strings.Join(answer, ",")
 }

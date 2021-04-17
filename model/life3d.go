@@ -1,5 +1,7 @@
 package model
 
+import utils "github.com/bigcubecat/gameoflifemodel/utils"
+
 type Life3d struct {
 	Data    [][][]bool
 	newData [][][]bool
@@ -109,9 +111,9 @@ func (life *Life3d) NextGeneration() {
 }
 
 func (life *Life3d) GetB() string {
-	return ListKeys(life.B)
+	return utils.ListKeys(life.B)
 }
 
 func (life *Life3d) GetS() string {
-	return ListKeys(life.S)
+	return utils.ListKeys(life.S)
 }
