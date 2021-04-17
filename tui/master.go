@@ -25,6 +25,10 @@ func (m MainModel) Init() tea.Cmd {
 }
 
 func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	if SWITCH {
+		SWITCH = false
+		//	m.show = NewShow
+	}
 	var cmd tea.Cmd
 	if SELECTED == 0 {
 		m.start, cmd = m.start.Update(msg)

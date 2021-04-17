@@ -3,6 +3,7 @@ package tui
 import "strconv"
 
 var SELECTED int
+var SWITCH bool
 var DM DataModel
 
 type DataModel struct {

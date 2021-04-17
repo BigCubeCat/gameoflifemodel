@@ -1,12 +1,17 @@
 package tui
 
 import (
+	"github.com/charmbracelet/bubbles/progress"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
 type ShowModel struct {
-	index int
+	index     int
+	gens      []int
+	dimension int
+	size      int
+	progress  progress.Model
 }
 
 func (m ShowModel) Init() tea.Cmd {
@@ -19,4 +24,8 @@ func (m ShowModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m ShowModel) View() string {
 	return ""
+}
+
+func NewShow() ShowModel {
+	return ShowModel{}
 }

@@ -45,6 +45,7 @@ func (m StartWindow) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "tab", "shift+tab", "enter", "up", "down":
 			s := msg.String()
 			if s == "enter" && m.index == len(m.Fields) {
+				SWITCH = true
 				SetSelected(1)
 				ReadInput(m.Fields[0].Value(), m.Fields[1].Value(), m.Fields[2].Value(), m.Fields[3].Value(), m.Fields[4].Value(), m.Fields[5].Value(), m.Fields[6].Value(), m.Fields[7].Value())
 				return m, nil
