@@ -6,6 +6,7 @@ import (
 	"github.com/TwinProduction/go-color"
 	finder "github.com/bigcubecat/gameoflifemodel/finder"
 	lifeModel "github.com/bigcubecat/gameoflifemodel/model"
+	TUI "github.com/bigcubecat/gameoflifemodel/tui"
 	"github.com/bigcubecat/gameoflifemodel/utils"
 	"github.com/spf13/pflag"
 )
@@ -27,6 +28,7 @@ func RunProgram(m lifeModel.MODEL) {
 		model5d         bool
 		probability     int
 		fileName        string
+		tui             bool
 	)
 	pflag.IntVarP(&dimension, "dimension", "d", 3, "dimension of world")
 	pflag.IntVarP(&size, "size", "S", 128, "side size")
@@ -35,8 +37,9 @@ func RunProgram(m lifeModel.MODEL) {
 	pflag.IntVarP(&countGeneration, "count", "g", 100, "count generations.")
 	pflag.BoolVarP(&showHelp, "help", "h", false, "Show help message")
 	pflag.BoolVarP(&model3d, "model3d", "3", false, "Use 3D model")
-	pflag.BoolVarP(&model3d, "model4d", "4", false, "Use 4D model")
-	pflag.BoolVarP(&model3d, "model5d", "5", false, "Use 5D model")
+	pflag.BoolVarP(&model4d, "model4d", "4", false, "Use 4D model")
+	pflag.BoolVarP(&model5d, "model5d", "5", false, "Use 5D model")
+	pflag.BoolVarP(&tui, "tui", "t", false, "Use tui")
 	pflag.IntVarP(&attempts, "attempt", "a", 100, "Count attempts")
 	pflag.IntVarP(&probability, "probability", "p", 50, "probability in %")
 	pflag.StringVarP(&fileName, "out", "o", "output.db", "Database name")
@@ -45,6 +48,10 @@ func RunProgram(m lifeModel.MODEL) {
 		pflag.Usage()
 		fmt.Println("Use \",\" to split different numbers on rule.")
 		fmt.Println("Use \"{start}.{end}\" to set range [start, end] (end and start includes)")
+		return
+	}
+	if tui {
+		TUI.RunTui()
 		return
 	}
 
@@ -62,11 +69,13 @@ func RunProgram(m lifeModel.MODEL) {
 				SIZE: size,
 				N:    4,
 			}
+			dimension = 4
 		} else if model5d {
 			model = &lifeModel.Life5d{
 				SIZE: size,
 				N:    5,
 			}
+			dimension = 5
 		} else {
 			model = &lifeModel.Life{
 				SIZE: size,

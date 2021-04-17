@@ -12,7 +12,7 @@ type Life4d struct {
 }
 
 func (life *Life4d) GetN() int {
-	return life.N
+	return 4
 }
 
 func (life *Life4d) GetSIZE() int {

@@ -11,11 +11,3 @@ type MODEL interface {
 	GetB() string
 	GetS() string
 }
-
-type dataModel struct {
-	D    int
-	SIZE int
-	DATA string
-	B    string
-	S    string
-}
