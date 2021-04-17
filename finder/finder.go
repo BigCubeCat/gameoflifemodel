@@ -45,11 +45,12 @@ func Run(mod model.MODEL, G int, T int, fileName string, probability int, b []in
 		early := false
 		count := uint(G)
 		outputData := ""
+		var alive bool
 		fmt.Println(color.Ize(color.Green, "Starting test"))
 		for g := uint(0); g <= uint(G); g++ {
 			fmt.Println(color.Ize(color.Cyan, "Generation ->"), g)
 			outputData = utils.DataToString(mod.GetData())
-			alive := utils.IsAlive(outputData)
+			alive = utils.IsAlive(outputData)
 			gen := Generation{
 				TestID:     test.ID,
 				Generation: g,
@@ -70,6 +71,7 @@ func Run(mod model.MODEL, G int, T int, fileName string, probability int, b []in
 		}
 		fmt.Println(color.Ize(color.Green, "End evolution"))
 		DB.Model(&test).Update("FinishDensity", uint(utils.GetDensity(outputData)))
+		DB.Model(&test).Update("Alive", alive)
 		if early {
 			DB.Model(&test).Update("Count", count)
 		}

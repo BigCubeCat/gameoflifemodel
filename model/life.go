@@ -6,20 +6,30 @@ import (
 
 // Life Game Of Life in N+1 dimansion torus
 type Life struct {
-	Data      []bool
-	dataSize  int
-	SIZE      int
-	N         int
-	B         map[int]bool
-	S         map[int]bool
-	steps     []int
-	neighbors map[string][]int
-	coords    []int
+	Data       []bool
+	dataSize   int
+	SIZE       int
+	N          int
+	B          map[int]bool
+	S          map[int]bool
+	steps      []int
+	neighbors  map[string][]int
+	coords     []int
+	Configured bool
 }
 
 // Setup setup model
 func (life *Life) Setup(b []int, s []int, data []bool) {
-	// Generate rules maps
+	// create Data and memorize SIZE degres
+	life.dataSize = utils.IntPow(life.SIZE, life.N)
+	life.Data = data
+	if life.Configured {
+		return
+	}
+	for i := 0; i <= life.N; i++ {
+		step := utils.IntPow(life.SIZE, i)
+		life.steps = append(life.steps, step)
+	} // Generate rules maps
 	life.B = make(map[int]bool)
 	life.S = make(map[int]bool)
 	for _, i := range b {
@@ -28,45 +38,59 @@ func (life *Life) Setup(b []int, s []int, data []bool) {
 	for _, i := range s {
 		life.S[i] = true
 	}
-	// create Data and memorize SIZE degres
-	life.dataSize = utils.IntPow(life.SIZE, life.N)
-	life.Data = data
-	for i := 0; i <= life.N; i++ {
-		step := utils.IntPow(life.SIZE, i)
-		life.steps = append(life.steps, step)
-	}
+
 	// find neighbors for not border point
+	points := make(map[int]string, life.N)
+	points[0] = ""
 	life.coords = append(life.coords, 0)
 	for _, s := range life.steps[0:life.N] {
 		var newCoords []int
 		for _, a := range life.coords {
-			newCoords = append(newCoords, a-s)
-			newCoords = append(newCoords, a+s)
+			left := a - s
+			right := a + s
+			points[left] = points[a] + "L"
+			points[right] = points[a] + "R"
+			newCoords = append(newCoords, left)
+			newCoords = append(newCoords, right)
+		}
+		for _, a := range life.coords {
+			points[a] += "M"
 		}
 		life.coords = append(life.coords, newCoords...)
 		newCoords = nil
 	}
 	// find all possible angles
-	life.neighbors = make(map[string][]int, 0)
+	life.neighbors = make(map[string][]int, life.N+1)
 	ch := make(chan string)
 	go func() {
 		defer close(ch)
 		utils.Permutation("MLR", "", life.N, ch) // generate all angles
 	}()
 	for i := range ch {
-		coords := make([]int, len(life.coords))
-		copy(coords, life.coords)
-		for index, char := range i {
-			diff := 0
-			if string(char) == "L" {
-				diff = 1
-			} else if string(char) == "R" {
-				diff = -1
-			}
-			coords[index] = coords[index] + diff*life.steps[index+1]
+		coords := make(map[string]int, len(life.coords))
+		for k, v := range points {
+			coords[v] = k
 		}
-		life.neighbors[i] = coords
+		for index, char := range i {
+			for key := range coords {
+				if string(key[index]) == string(char) {
+					diff := 0
+					if string(char) == "L" {
+						diff = 1
+					} else if string(char) == "R" {
+						diff = -1
+					}
+					coords[key] += diff * life.steps[index+1]
+				}
+			}
+		}
+		var list []int
+		for _, value := range coords {
+			list = append(list, value)
+		}
+		life.neighbors[i] = list
 	}
+	life.Configured = true
 }
 
 func (life *Life) checkBoreders(index int) string {
