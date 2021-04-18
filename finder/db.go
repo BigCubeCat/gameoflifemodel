@@ -8,7 +8,7 @@ import (
 var DB *gorm.DB
 
 type Attempt struct {
-	gorm.Model
+	ID        uint `gorm:"primaryKey"`
 	B         string
 	S         string
 	Size      uint
@@ -18,21 +18,23 @@ type Attempt struct {
 }
 
 type Test struct {
-	gorm.Model
-	AttemptID   uint
-	Count       uint
-	Generations []Generation `gorm:"foreignKey:TestID"`
+	ID            uint `gorm:"primaryKey"`
+	AttemptID     uint
+	Count         uint
+	Alive         bool
+	StartDensity  uint
+	FinishDensity uint
+	Generations   []Generation `gorm:"foreignKey:TestID"`
 }
 
 type Generation struct {
-	gorm.Model
-	TestID        uint
-	Generation    uint `gorm:"default:0"`
-	StartDensity  uint
-	FinishDensity uint
-	Data          string
+	ID         uint `gorm:"primaryKey"`
+	TestID     uint
+	Generation uint `gorm:"default:0"`
+	Data       string
 }
 
+// InitDatabase init database
 func InitDatabase(databaseName string) {
 	var err error
 	DB, err = gorm.Open(sqlite.Open(databaseName), &gorm.Config{})
