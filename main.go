@@ -1,4 +1,4 @@
-package gameoflifemodel
+package main
 
 import (
 	"fmt"
