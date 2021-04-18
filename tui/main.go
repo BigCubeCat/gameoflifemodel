@@ -19,6 +19,8 @@ type MainModel struct {
 	sRule        string
 	GProgress    *progress.Model
 	APrgogres    *progress.Model
+	G            float64
+	A            float64
 }
 
 func (m MainModel) Init() tea.Cmd {
@@ -26,7 +28,19 @@ func (m MainModel) Init() tea.Cmd {
 }
 
 func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		switch msg.String() {
+		case "q", "ctrl+c", "esc":
+			return m, tea.Quit
+		}
+	}
 	return m, nil
+}
+
+func (m *MainModel) UpdateData(G float64, A float64) {
+	m.A = A
+	m.G = G
 }
 
 func (m MainModel) View() string {
@@ -46,7 +60,10 @@ func (m MainModel) View() string {
 		}
 	}
 	top := strings.Join(canvas, "\n") + "\n\n\n"
-	return header + top
+	footer := ""
+	footer += "Attempt:\n" + m.APrgogres.View(m.A) + "\n"
+	footer += "Generation:\n" + m.GProgress.View(m.G) + "\n\n"
+	return header + top + footer
 }
 
 func NewModel() MainModel {

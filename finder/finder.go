@@ -6,11 +6,12 @@ import (
 
 	"github.com/TwinProduction/go-color"
 	model "github.com/bigcubecat/gameoflifemodel/model"
+	TUI "github.com/bigcubecat/gameoflifemodel/tui"
 	utils "github.com/bigcubecat/gameoflifemodel/utils"
 )
 
 // Run run model
-func Run(mod model.MODEL, G int, T int, fileName string, probability int, b []int, s []int, dataSize int) {
+func Run(mod model.MODEL, G int, T int, fileName string, probability int, b []int, s []int, dataSize int, tuiModel TUI.MainModel) {
 	InitDatabase(fileName)
 	a := Attempt{
 		Size:      uint(mod.GetSIZE()),
