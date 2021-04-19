@@ -2,7 +2,6 @@ package finder
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/TwinProduction/go-color"
 	model "github.com/bigcubecat/gameoflifemodel/model"
@@ -11,7 +10,7 @@ import (
 )
 
 // Run run model
-func Run(mod model.MODEL, G int, T int, fileName string, probability int, b []int, s []int, dataSize int, tuiModel TUI.MainModel) {
+func Run(mod model.MODEL, G int, T int, fileName string, probability int, b []int, s []int, dataSize int, change chan TUI.ChangeModel) {
 	InitDatabase(fileName)
 	a := Attempt{
 		Size:      uint(mod.GetSIZE()),
@@ -25,7 +24,7 @@ func Run(mod model.MODEL, G int, T int, fileName string, probability int, b []in
 		return
 	}
 	for t := 0; t < T; t++ {
-		fmt.Println(color.Ize(color.Green, "Starting test "+strconv.Itoa(t)))
+		//fmt.Println(color.Ize(color.Green, "Starting test "+strconv.Itoa(t)))
 		test := Test{
 			AttemptID:     a.ID,
 			Count:         uint(G), // Need update, if finish early
@@ -47,9 +46,11 @@ func Run(mod model.MODEL, G int, T int, fileName string, probability int, b []in
 		count := uint(G)
 		outputData := ""
 		var alive bool
-		fmt.Println(color.Ize(color.Green, "Starting test"))
+		//fmt.Println(color.Ize(color.Green, "Starting test"))
+		_t := float64(t) / float64(T)
+		change <- TUI.ChangeModel{A: _t, G: float64(0)}
 		for g := uint(0); g <= uint(G); g++ {
-			fmt.Println(color.Ize(color.Cyan, "Generation ->"), g)
+			//fmt.Println(color.Ize(color.Cyan, "Generation ->"), g)
 			outputData = utils.DataToString(mod.GetData())
 			alive = utils.IsAlive(outputData)
 			gen := Generation{
@@ -69,12 +70,14 @@ func Run(mod model.MODEL, G int, T int, fileName string, probability int, b []in
 				break
 			}
 			mod.NextGeneration()
+			change <- TUI.ChangeModel{A: _t, G: float64(g) / float64(G)}
 		}
-		fmt.Println(color.Ize(color.Green, "End evolution"))
+		//fmt.Println(color.Ize(color.Green, "End evolution"))
 		DB.Model(&test).Update("FinishDensity", uint(utils.GetDensity(outputData)))
 		DB.Model(&test).Update("Alive", alive)
 		if early {
 			DB.Model(&test).Update("Count", count)
 		}
 	}
+	change <- TUI.ChangeModel{Finished: true}
 }

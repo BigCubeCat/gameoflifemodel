@@ -2,12 +2,14 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/TwinProduction/go-color"
 	finder "github.com/bigcubecat/gameoflifemodel/finder"
 	lifeModel "github.com/bigcubecat/gameoflifemodel/model"
-	TUI "github.com/bigcubecat/gameoflifemodel/tui"
+	"github.com/bigcubecat/gameoflifemodel/tui"
 	"github.com/bigcubecat/gameoflifemodel/utils"
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/pflag"
 )
 
@@ -28,7 +30,6 @@ func RunProgram(m lifeModel.MODEL) {
 		model5d         bool
 		probability     int
 		fileName        string
-		tui             bool
 	)
 	pflag.IntVarP(&dimension, "dimension", "d", 3, "dimension of world")
 	pflag.IntVarP(&size, "size", "S", 128, "side size")
@@ -39,7 +40,6 @@ func RunProgram(m lifeModel.MODEL) {
 	pflag.BoolVarP(&model3d, "model3d", "3", false, "Use 3D model")
 	pflag.BoolVarP(&model4d, "model4d", "4", false, "Use 4D model")
 	pflag.BoolVarP(&model5d, "model5d", "5", false, "Use 5D model")
-	pflag.BoolVarP(&tui, "tui", "t", false, "Use tui")
 	pflag.IntVarP(&attempts, "attempt", "a", 100, "Count attempts")
 	pflag.IntVarP(&probability, "probability", "p", 50, "probability in %")
 	pflag.StringVarP(&fileName, "out", "o", "output.db", "Database name")
@@ -50,11 +50,6 @@ func RunProgram(m lifeModel.MODEL) {
 		fmt.Println("Use \"{start}.{end}\" to set range [start, end] (end and start includes)")
 		return
 	}
-	if tui {
-		TUI.RunTui()
-		return
-	}
-
 	var model lifeModel.MODEL
 
 	if m == nil {
@@ -90,7 +85,17 @@ func RunProgram(m lifeModel.MODEL) {
 	s = utils.ReadRule(S)
 
 	fmt.Println(color.Ize(color.Green, "Start game of life"))
-	finder.Run(model, countGeneration, attempts, fileName, probability, b, s, dataSize)
+	chanel := make(chan tui.ChangeModel, 1)
+	go func() {
+		defer close(chanel)
+		finder.Run(model, countGeneration, attempts, fileName, probability, b, s, dataSize, chanel)
+	}()
+	p := tea.NewProgram(tui.NewModel(chanel, B, S, dimension, size))
+	p.EnterAltScreen()
+	if err := p.Start(); err != nil {
+		fmt.Printf("could not start program: %s\n", err)
+		os.Exit(1)
+	}
 	fmt.Println(color.Ize(color.Green, "Finish. No Errors"))
 }
 
