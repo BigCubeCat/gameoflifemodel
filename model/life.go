@@ -13,7 +13,7 @@ type Life struct {
 	B          map[int]bool
 	S          map[int]bool
 	steps      []int
-	neighbors  map[string][]int
+	points     map[int][]int
 	coords     []int
 	Configured bool
 }
@@ -60,7 +60,7 @@ func (life *Life) Setup(b []int, s []int, data []bool) {
 		newCoords = nil
 	}
 	// find all possible angles
-	life.neighbors = make(map[string][]int, life.N+1)
+	neighbors := make(map[string][]int, life.N+1)
 	ch := make(chan string)
 	go func() {
 		defer close(ch)
@@ -88,7 +88,11 @@ func (life *Life) Setup(b []int, s []int, data []bool) {
 		for _, value := range coords {
 			list = append(list, value)
 		}
-		life.neighbors[i] = list
+		neighbors[i] = list
+	}
+	life.points = make(map[int][]int, life.dataSize)
+	for i := range life.Data {
+		life.points[i] = neighbors[life.checkBoreders(i)]
 	}
 	life.Configured = true
 }
@@ -111,8 +115,7 @@ func (life *Life) checkBoreders(index int) string {
 
 func (life *Life) countNeighbors(index int) int {
 	countN := 0
-	coords := life.neighbors[life.checkBoreders(index)]
-	for _, c := range coords {
+	for _, c := range life.points[index] {
 		if life.Data[index+c] {
 			countN++
 		}
