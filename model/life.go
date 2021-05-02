@@ -13,7 +13,7 @@ type Life struct {
 	B          map[int]bool
 	S          map[int]bool
 	steps      []int
-	points     map[int][]int
+	points     [][]int
 	coords     []int
 	Configured bool
 }
@@ -90,7 +90,7 @@ func (life *Life) Setup(b []int, s []int, data []bool) {
 		}
 		neighbors[i] = list
 	}
-	life.points = make(map[int][]int, life.dataSize)
+	life.points = make([][]int, life.dataSize)
 	for i := range life.Data {
 		life.points[i] = neighbors[life.checkBoreders(i)]
 	}
@@ -116,6 +116,9 @@ func (life *Life) checkBoreders(index int) string {
 func (life *Life) countNeighbors(index int) int {
 	countN := 0
 	for _, c := range life.points[index] {
+		if c == 0 {
+			continue
+		}
 		if life.Data[index+c] {
 			countN++
 		}

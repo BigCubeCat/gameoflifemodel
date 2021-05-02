@@ -30,6 +30,8 @@ func RunProgram(m lifeModel.MODEL) {
 		model5d         bool
 		probability     int
 		fileName        string
+		f               bool
+		inputFile       string
 	)
 	pflag.IntVarP(&dimension, "dimension", "d", 3, "dimension of world")
 	pflag.IntVarP(&size, "size", "S", 128, "side size")
@@ -43,12 +45,30 @@ func RunProgram(m lifeModel.MODEL) {
 	pflag.IntVarP(&attempts, "attempt", "a", 100, "Count attempts")
 	pflag.IntVarP(&probability, "probability", "p", 50, "probability in %")
 	pflag.StringVarP(&fileName, "out", "o", "output.db", "Database name")
+	pflag.StringVarP(&inputFile, "input", "i", "", "Input file")
+	pflag.BoolVarP(&f, "use-file", "u", false, "Use file")
 	pflag.Parse()
 	if showHelp {
 		pflag.Usage()
 		fmt.Println("Use \",\" to split different numbers on rule.")
 		fmt.Println("Use \"{start}.{end}\" to set range [start, end] (end and start includes)")
 		return
+	}
+
+	var d []bool
+
+	if f {
+		dataModel, err := finder.ReadJSON(attempts, inputFile)
+		if err != nil {
+			fmt.Println(color.Ize(color.Red, "Error"))
+			fmt.Println(err)
+			return
+		}
+		B = dataModel.B
+		S = dataModel.S
+		dimension = dataModel.D
+		size = dataModel.SIZE
+		d = utils.StringToData(utils.RLEDecode(dataModel.DATA))
 	}
 	var model lifeModel.MODEL
 
@@ -85,6 +105,11 @@ func RunProgram(m lifeModel.MODEL) {
 	s = utils.ReadRule(S)
 
 	fmt.Println(color.Ize(color.Green, "Start game of life"))
+	if f {
+		model.Setup(b, s, d)
+		finder.RunFromFile(model, attempts, fileName)
+		return
+	}
 	chanel := make(chan tui.ChangeModel, 1)
 	go func() {
 		defer close(chanel)

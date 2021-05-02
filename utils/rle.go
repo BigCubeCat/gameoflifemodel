@@ -22,17 +22,15 @@ func RLEDecode(str string) string {
 
 func RLECode(str string) string {
 	answer := ""
-	prevChar := int32(0)
-	count := 1
+	prevChar := string(str[0])
+	count := 0
 	for _, c := range str {
-		if prevChar == c {
+		if prevChar == string(c) {
 			count++
 		} else {
-			if prevChar > 0 {
-				answer += strconv.Itoa(count) + string(prevChar)
-			}
+			answer += strconv.Itoa(count) + prevChar
 			count = 1
-			prevChar = c
+			prevChar = string(c)
 		}
 	}
 	answer += strconv.Itoa(count) + string(prevChar)
@@ -46,6 +44,18 @@ func DataToString(data []bool) string {
 			answer += "A"
 		} else {
 			answer += "D"
+		}
+	}
+	return answer
+}
+
+func StringToData(data string) []bool {
+	var answer []bool
+	for _, c := range data {
+		if string(c) == "A" {
+			answer = append(answer, true)
+		} else {
+			answer = append(answer, false)
 		}
 	}
 	return answer
